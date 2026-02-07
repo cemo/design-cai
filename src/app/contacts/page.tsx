@@ -3,6 +3,7 @@
 import { useState } from "react";
 import {
   ArrowLeft,
+  ArrowRight,
   Building2,
   Calendar,
   Check,
@@ -81,9 +82,11 @@ interface Opportunity {
 }
 
 interface Contact {
+  id: string;
   firstName: string;
   lastName: string;
   email: string;
+  accountId: string;
   accountName: string;
   status: ContactStatus;
   amount: string;
@@ -100,9 +103,11 @@ interface Contact {
 
 const initialContacts: Contact[] = [
   {
+    id: "con_ad",
     firstName: "Ayşe",
     lastName: "Demir",
     email: "ayse.demir@turktraktor.com.tr",
+    accountId: "acc_tt",
     accountName: "Türk Traktör",
     status: "Pending Approval",
     amount: "$185,000",
@@ -117,9 +122,11 @@ const initialContacts: Contact[] = [
     createdDate: "Feb 6, 2024",
   },
   {
+    id: "con_my",
     firstName: "Mehmet",
     lastName: "Yılmaz",
     email: "mehmet@caterpillar.com.tr",
+    accountId: "acc_cat",
     accountName: "Caterpillar Turkey",
     status: "Pending Approval",
     amount: "$92,000",
@@ -134,9 +141,11 @@ const initialContacts: Contact[] = [
     createdDate: "Feb 6, 2024",
   },
   {
+    id: "con_cm",
     firstName: "Carlos",
     lastName: "Mendez",
     email: "carlos@jcb-latam.com",
+    accountId: "acc_jcb",
     accountName: "JCB Latin America",
     status: "Pending Approval",
     amount: "$340,000",
@@ -151,9 +160,11 @@ const initialContacts: Contact[] = [
     createdDate: "Feb 6, 2024",
   },
   {
+    id: "con_sj",
     firstName: "Sarah",
     lastName: "Johnson",
     email: "sarah@acme.com",
+    accountId: "acc_acme",
     accountName: "Acme Corp",
     status: "Active",
     amount: "$12,500",
@@ -174,9 +185,11 @@ const initialContacts: Contact[] = [
     createdDate: "Jan 15, 2024",
   },
   {
+    id: "con_mc",
     firstName: "Michael",
     lastName: "Chen",
     email: "m.chen@techstart.io",
+    accountId: "acc_ts",
     accountName: "TechStart",
     status: "Active",
     amount: "$8,200",
@@ -193,9 +206,11 @@ const initialContacts: Contact[] = [
     createdDate: "Mar 3, 2024",
   },
   {
+    id: "con_er",
     firstName: "Emily",
     lastName: "Rodriguez",
     email: "emily@globalfin.com",
+    accountId: "acc_gf",
     accountName: "GlobalFin",
     status: "Active",
     amount: "$24,000",
@@ -212,9 +227,11 @@ const initialContacts: Contact[] = [
     createdDate: "Feb 20, 2024",
   },
   {
+    id: "con_jw",
     firstName: "James",
     lastName: "Wilson",
     email: "jwilson@innovate.co",
+    accountId: "acc_il",
     accountName: "Innovate Labs",
     status: "Active",
     amount: "$15,750",
@@ -232,9 +249,11 @@ const initialContacts: Contact[] = [
     createdDate: "Dec 8, 2023",
   },
   {
+    id: "con_lt",
     firstName: "Lisa",
     lastName: "Thompson",
     email: "lisa@buildright.com",
+    accountId: "acc_br",
     accountName: "BuildRight",
     status: "Inactive",
     amount: "$4,300",
@@ -251,9 +270,11 @@ const initialContacts: Contact[] = [
     createdDate: "Nov 12, 2023",
   },
   {
+    id: "con_dk",
     firstName: "David",
     lastName: "Kim",
     email: "dkim@nextera.io",
+    accountId: "acc_ne",
     accountName: "NextEra",
     status: "Active",
     amount: "$31,000",
@@ -271,9 +292,11 @@ const initialContacts: Contact[] = [
     createdDate: "Oct 5, 2023",
   },
   {
+    id: "con_ak",
     firstName: "Anna",
     lastName: "Kowalski",
     email: "anna@eurodesign.eu",
+    accountId: "acc_ed",
     accountName: "EuroDesign",
     status: "Active",
     amount: "$9,800",
@@ -290,9 +313,11 @@ const initialContacts: Contact[] = [
     createdDate: "Apr 18, 2024",
   },
   {
+    id: "con_rg",
     firstName: "Robert",
     lastName: "Garcia",
     email: "rgarcia@solarwind.com",
+    accountId: "acc_sw",
     accountName: "SolarWind",
     status: "Active",
     amount: "$18,400",
@@ -310,9 +335,11 @@ const initialContacts: Contact[] = [
     createdDate: "Sep 22, 2023",
   },
   {
+    id: "con_pp",
     firstName: "Priya",
     lastName: "Patel",
     email: "priya@cloudnine.dev",
+    accountId: "acc_cn",
     accountName: "CloudNine",
     status: "Active",
     amount: "$22,100",
@@ -329,9 +356,11 @@ const initialContacts: Contact[] = [
     createdDate: "Jan 30, 2024",
   },
   {
+    id: "con_ta",
     firstName: "Tom",
     lastName: "Anderson",
     email: "tom@steelbridge.co",
+    accountId: "acc_sb",
     accountName: "SteelBridge",
     status: "Inactive",
     amount: "$6,700",
@@ -443,7 +472,7 @@ export default function ContactsPage() {
     setContactList((prev) =>
       prev
         .map((c) =>
-          c.email === mergeTarget.email
+          c.id === mergeTarget.id
             ? {
                 ...c,
                 ...mergeForm,
@@ -451,7 +480,7 @@ export default function ContactsPage() {
               }
             : c
         )
-        .filter((c) => c.email !== selectedContact.email)
+        .filter((c) => c.id !== selectedContact.id)
     );
     setSelectedContact(null);
     setSheetView("approval");
@@ -459,7 +488,7 @@ export default function ContactsPage() {
   };
 
   const filteredMergeContacts = contactList.filter((c) => {
-    if (c.email === selectedContact?.email) return false;
+    if (c.id === selectedContact?.id) return false;
     if (c.status === "Pending Approval") return false;
     if (!mergeSearch) return true;
     const q = mergeSearch.toLowerCase();
@@ -474,7 +503,7 @@ export default function ContactsPage() {
     if (!selectedContact) return;
     setContactList((prev) =>
       prev.map((c) =>
-        c.email === selectedContact.email
+        c.id === selectedContact.id
           ? {
               ...c,
               ...editForm,
@@ -490,7 +519,7 @@ export default function ContactsPage() {
   const handleReject = () => {
     if (!selectedContact) return;
     setContactList((prev) =>
-      prev.filter((c) => c.email !== selectedContact.email)
+      prev.filter((c) => c.id !== selectedContact.id)
     );
     setSelectedContact(null);
   };
@@ -569,7 +598,7 @@ export default function ContactsPage() {
             <TableBody>
               {contactList.map((contact) => (
                 <TableRow
-                  key={contact.email}
+                  key={contact.id}
                   className={`cursor-pointer ${contact.status === "Pending Approval" ? "bg-violet-50/50 hover:bg-violet-50 dark:bg-violet-950/20 dark:hover:bg-violet-950/30" : ""}`}
                   onClick={() => handleSelectContact(contact)}
                 >
@@ -681,7 +710,7 @@ export default function ContactsPage() {
           }
         }}
       >
-        <SheetContent className={`overflow-y-auto ${sheetView === "merge" ? "sm:max-w-3xl" : "sm:max-w-md"}`}>
+        <SheetContent className={`overflow-y-auto ${sheetView === "merge" ? "sm:max-w-2xl" : "sm:max-w-md"}`}>
           {selectedContact && selectedContact.status === "Pending Approval" && sheetView === "approval" && (
             <>
               <SheetHeader>
@@ -772,31 +801,27 @@ export default function ContactsPage() {
 
                 <Separator />
 
-                <div className="flex flex-col gap-2">
-                  <div className="flex gap-2">
-                    <Button
-                      className="flex-1 cursor-pointer bg-emerald-600 text-white hover:bg-emerald-700"
-                      onClick={handleApprove}
-                    >
-                      <Check className="mr-2 size-4" />
-                      Approve
-                    </Button>
-                    <Button
-                      variant="outline"
-                      className="flex-1 cursor-pointer border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700 dark:border-red-800 dark:text-red-400 dark:hover:bg-red-950/30"
-                      onClick={handleReject}
-                    >
-                      <X className="mr-2 size-4" />
-                      Reject
-                    </Button>
-                  </div>
+                <div className="flex gap-2">
                   <Button
                     variant="outline"
-                    className="w-full cursor-pointer"
+                    className="flex-1 cursor-pointer border-rose-200 bg-rose-50 text-rose-600 hover:bg-rose-100 hover:text-rose-700 dark:border-rose-800 dark:bg-rose-950/30 dark:text-rose-400 dark:hover:bg-rose-950/50"
+                    onClick={handleReject}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    className="flex-1 cursor-pointer bg-violet-600 text-white hover:bg-violet-700"
                     onClick={handleStartMergeSearch}
                   >
                     <GitMerge className="mr-2 size-4" />
-                    Merge with Existing...
+                    Merge with...
+                  </Button>
+                  <Button
+                    className="flex-1 cursor-pointer bg-emerald-600 text-white hover:bg-emerald-700"
+                    onClick={handleApprove}
+                  >
+                    <Check className="mr-2 size-4" />
+                    Approve
                   </Button>
                 </div>
               </div>
@@ -844,7 +869,7 @@ export default function ContactsPage() {
                   )}
                   {filteredMergeContacts.map((contact) => (
                     <button
-                      key={contact.email}
+                      key={contact.id}
                       type="button"
                       className="flex w-full cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-left transition-colors hover:bg-muted"
                       onClick={() => handleSelectMergeTarget(contact)}
@@ -890,14 +915,22 @@ export default function ContactsPage() {
                   <div className="flex-1">
                     <SheetTitle>Merge Contacts</SheetTitle>
                     <SheetDescription>
-                      Click on a value to use it in the merged result, or edit directly
+                      cai data will overwrite the existing record
                     </SheetDescription>
                   </div>
                 </div>
               </SheetHeader>
 
               <div className="flex flex-col gap-4 px-4 pb-4">
-                <div className="grid grid-cols-3 gap-3">
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="flex items-center gap-2 rounded-lg border border-violet-200 bg-violet-50 px-3 py-2.5 dark:border-violet-800 dark:bg-violet-950/30">
+                    <Sparkles className="size-4 shrink-0 text-violet-600" />
+                    <div className="min-w-0">
+                      <p className="truncate text-xs font-semibold text-violet-700 dark:text-violet-300">{selectedContact.firstName} {selectedContact.lastName}</p>
+                      <p className="truncate text-[10px] text-violet-600/70 dark:text-violet-400/70">cai · {selectedContact.accountName}</p>
+                    </div>
+                  </div>
+
                   <div className="flex items-center gap-2 rounded-lg border px-3 py-2.5">
                     <Avatar className="size-7 shrink-0">
                       <AvatarFallback className="bg-primary/10 text-[10px] font-medium text-primary">
@@ -906,82 +939,138 @@ export default function ContactsPage() {
                     </Avatar>
                     <div className="min-w-0">
                       <p className="truncate text-xs font-semibold">{mergeTarget.firstName} {mergeTarget.lastName}</p>
-                      <p className="truncate text-[10px] text-muted-foreground">Existing Record</p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2.5 dark:border-amber-800 dark:bg-amber-950/30">
-                    <GitMerge className="size-4 shrink-0 text-amber-600" />
-                    <div className="min-w-0">
-                      <p className="truncate text-xs font-semibold text-amber-700 dark:text-amber-300">Merged Result</p>
-                      <p className="truncate text-[10px] text-amber-600/70 dark:text-amber-400/70">Final record</p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-2 rounded-lg border border-violet-200 bg-violet-50 px-3 py-2.5 dark:border-violet-800 dark:bg-violet-950/30">
-                    <Sparkles className="size-4 shrink-0 text-violet-600" />
-                    <div className="min-w-0">
-                      <p className="truncate text-xs font-semibold text-violet-700 dark:text-violet-300">{selectedContact.firstName} {selectedContact.lastName}</p>
-                      <p className="truncate text-[10px] text-violet-600/70 dark:text-violet-400/70">Created by cai</p>
+                      <p className="truncate text-[10px] text-muted-foreground">Existing · {mergeTarget.accountName}</p>
                     </div>
                   </div>
                 </div>
 
                 <div className="space-y-1">
                   {MERGEABLE_FIELDS.map(({ key, label }) => {
-                    const existingVal = mergeTarget[key]?.trim() || "";
                     const caiVal = (selectedContact[key] as string)?.trim() || "";
-                    const conflict = getConflictType(existingVal, caiVal);
-                    const isConflict = conflict === "conflict";
+                    const existingVal = mergeTarget[key]?.trim() || "";
+                    const isDifferent = existingVal !== caiVal && !!caiVal;
 
                     return (
-                      <div key={key} className={`grid grid-cols-3 gap-3 rounded-lg px-1 py-2 ${isConflict ? "bg-amber-50/50 dark:bg-amber-950/10" : ""}`}>
-                        <div>
-                          <p className="mb-1 text-[10px] font-medium text-muted-foreground">{label}</p>
-                          <button
-                            type="button"
-                            className={`w-full cursor-pointer rounded-md border px-2.5 py-1.5 text-left text-xs transition-colors ${
-                              mergeForm[key] === existingVal && existingVal
-                                ? "border-primary bg-primary/5 font-medium text-primary"
-                                : "border-border text-foreground hover:border-primary/50 hover:bg-muted"
-                            } ${!existingVal ? "border-dashed text-muted-foreground" : ""}`}
-                            onClick={() => { if (existingVal) setMergeForm((prev) => ({ ...prev, [key]: existingVal })); }}
-                          >
-                            {existingVal || "—"}
-                          </button>
-                        </div>
-
+                      <div key={key} className={`grid grid-cols-2 gap-3 rounded-lg px-1 py-2 ${isDifferent ? "bg-violet-50/30 dark:bg-violet-950/10" : ""}`}>
                         <div>
                           <div className="mb-1 flex items-center gap-1">
                             <p className="text-[10px] font-medium text-muted-foreground">{label}</p>
-                            {isConflict && <Zap className="size-2.5 text-amber-500" />}
+                            {isDifferent && <Zap className="size-2.5 text-violet-500" />}
                           </div>
+                          <div className={`rounded-md border border-dashed border-violet-200 px-2.5 py-1.5 text-xs dark:border-violet-800 ${!caiVal ? "text-muted-foreground" : "text-foreground"}`}>
+                            {caiVal || "—"}
+                          </div>
+                        </div>
+
+                        <div>
+                          <p className="mb-1 text-[10px] font-medium text-muted-foreground">{label}</p>
                           <Input
-                            className="h-auto border-amber-200 bg-amber-50/50 px-2.5 py-1.5 text-xs focus-visible:ring-amber-400 dark:border-amber-800 dark:bg-amber-950/20"
+                            className="h-auto px-2.5 py-1.5 text-xs"
                             value={mergeForm[key] || ""}
                             onChange={(e) => setMergeForm((prev) => ({ ...prev, [key]: e.target.value }))}
                             placeholder="—"
                           />
                         </div>
-
-                        <div>
-                          <p className="mb-1 text-[10px] font-medium text-muted-foreground">{label}</p>
-                          <button
-                            type="button"
-                            className={`w-full cursor-pointer rounded-md border px-2.5 py-1.5 text-left text-xs transition-colors ${
-                              mergeForm[key] === caiVal && caiVal
-                                ? "border-violet-400 bg-violet-50 font-medium text-violet-700 dark:border-violet-600 dark:bg-violet-950/30 dark:text-violet-300"
-                                : "border-border text-foreground hover:border-violet-300 hover:bg-muted"
-                            } ${!caiVal ? "border-dashed text-muted-foreground" : ""}`}
-                            onClick={() => { if (caiVal) setMergeForm((prev) => ({ ...prev, [key]: caiVal })); }}
-                          >
-                            {caiVal || "—"}
-                          </button>
-                        </div>
                       </div>
                     );
                   })}
                 </div>
+
+                {mergeTarget.accountId !== selectedContact.accountId && (
+                  <>
+                    <Separator />
+                    <div className="flex items-center gap-2 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 dark:border-amber-800 dark:bg-amber-950/30">
+                      <Building2 className="size-4 shrink-0 text-amber-600" />
+                      <div className="flex items-center gap-1.5 text-sm font-medium text-amber-800 dark:text-amber-300">
+                        <span>{selectedContact.accountName}</span>
+                        <ArrowRight className="size-3.5" />
+                        <span>{mergeTarget.accountName}</span>
+                      </div>
+                    </div>
+                  </>
+                )}
+
+                {selectedContact.opportunities.length > 0 && (
+                  <>
+                    <Separator />
+                    <div>
+                      <div className="mb-2 flex items-center justify-between">
+                        <p className="text-xs font-medium text-muted-foreground">
+                          cai Opportunities ({selectedContact.opportunities.length})
+                        </p>
+                        <div className="flex items-center gap-1 rounded-full border border-violet-200 bg-violet-50 px-2 py-0.5 dark:border-violet-800 dark:bg-violet-950/30">
+                          <ArrowRight className="size-3 text-violet-600" />
+                          <span className="text-[10px] font-medium text-violet-700 dark:text-violet-300">
+                            Transferring to {mergeTarget.firstName} {mergeTarget.lastName}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="rounded-lg border border-violet-100 dark:border-violet-900">
+                        <Table>
+                          <TableHeader>
+                            <TableRow>
+                              <TableHead className="h-8 text-xs">Name</TableHead>
+                              <TableHead className="h-8 text-xs">Stage</TableHead>
+                              <TableHead className="h-8 text-right text-xs">Amount</TableHead>
+                            </TableRow>
+                          </TableHeader>
+                          <TableBody>
+                            {selectedContact.opportunities.map((opp) => (
+                              <TableRow key={opp.name}>
+                                <TableCell className="py-1.5 text-xs">{opp.name}</TableCell>
+                                <TableCell className="py-1.5">
+                                  <Badge variant="outline" className="text-[10px]">{opp.stage}</Badge>
+                                </TableCell>
+                                <TableCell className="py-1.5 text-right text-xs font-medium">{opp.amount}</TableCell>
+                              </TableRow>
+                            ))}
+                          </TableBody>
+                        </Table>
+                      </div>
+                    </div>
+                  </>
+                )}
+
+                {mergeTarget.opportunities.length > 0 && (
+                  <>
+                    <Separator />
+                    <div>
+                      <div className="mb-2 flex items-center justify-between">
+                        <p className="text-xs font-medium text-muted-foreground">
+                          Existing Opportunities ({mergeTarget.opportunities.length})
+                        </p>
+                        <div className="flex items-center gap-1 rounded-full border border-emerald-200 bg-emerald-50 px-2 py-0.5 dark:border-emerald-800 dark:bg-emerald-950/30">
+                          <Check className="size-3 text-emerald-600" />
+                          <span className="text-[10px] font-medium text-emerald-700 dark:text-emerald-300">
+                            Stays in {mergeTarget.firstName} {mergeTarget.lastName}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="rounded-lg border">
+                        <Table>
+                          <TableHeader>
+                            <TableRow>
+                              <TableHead className="h-8 text-xs">Name</TableHead>
+                              <TableHead className="h-8 text-xs">Stage</TableHead>
+                              <TableHead className="h-8 text-right text-xs">Amount</TableHead>
+                            </TableRow>
+                          </TableHeader>
+                          <TableBody>
+                            {mergeTarget.opportunities.map((opp) => (
+                              <TableRow key={opp.name}>
+                                <TableCell className="py-1.5 text-xs">{opp.name}</TableCell>
+                                <TableCell className="py-1.5">
+                                  <Badge variant="outline" className="text-[10px]">{opp.stage}</Badge>
+                                </TableCell>
+                                <TableCell className="py-1.5 text-right text-xs font-medium">{opp.amount}</TableCell>
+                              </TableRow>
+                            ))}
+                          </TableBody>
+                        </Table>
+                      </div>
+                    </div>
+                  </>
+                )}
 
                 <Separator />
 

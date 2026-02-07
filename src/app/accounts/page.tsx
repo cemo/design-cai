@@ -3,6 +3,7 @@
 import { useState } from "react";
 import {
   ArrowLeft,
+  ArrowRight,
   Briefcase,
   Building2,
   Check,
@@ -64,7 +65,15 @@ interface Contact {
   phone: string;
 }
 
+interface Opportunity {
+  name: string;
+  amount: string;
+  stage: string;
+  closeDate: string;
+}
+
 interface Account {
+  id: string;
   name: string;
   website: string;
   phone: string;
@@ -76,6 +85,7 @@ interface Account {
   lastActivityDate: string;
   initials: string;
   contacts: Contact[];
+  opportunities: Opportunity[];
   description: string[];
   createdDate: string;
 }
@@ -103,6 +113,7 @@ function getConflictType(existing: string, incoming: string): "same" | "one-empt
 
 const initialAccounts: Account[] = [
   {
+    id: "acc_tt",
     name: "Türk Traktör",
     website: "turktraktor.com.tr",
     phone: "",
@@ -114,10 +125,12 @@ const initialAccounts: Account[] = [
     lastActivityDate: "2 hours ago",
     initials: "TT",
     contacts: [{ name: "Ayşe Demir", email: "ayse.demir@turktraktor.com.tr", phone: "" }],
+    opportunities: [],
     description: ["Auto-created by cai from email analysis"],
     createdDate: "Feb 6, 2024",
   },
   {
+    id: "acc_cat",
     name: "Caterpillar Turkey",
     website: "caterpillar.com.tr",
     phone: "",
@@ -129,10 +142,12 @@ const initialAccounts: Account[] = [
     lastActivityDate: "5 hours ago",
     initials: "CT",
     contacts: [{ name: "Mehmet Yılmaz", email: "mehmet@caterpillar.com.tr", phone: "" }],
+    opportunities: [],
     description: ["Auto-created by cai from email analysis"],
     createdDate: "Feb 6, 2024",
   },
   {
+    id: "acc_jcb",
     name: "JCB Latin America",
     website: "jcb-latam.com",
     phone: "",
@@ -144,10 +159,12 @@ const initialAccounts: Account[] = [
     lastActivityDate: "4 days ago",
     initials: "JL",
     contacts: [{ name: "Carlos Mendez", email: "carlos@jcb-latam.com", phone: "" }],
+    opportunities: [],
     description: ["Auto-created by cai from email analysis"],
     createdDate: "Feb 6, 2024",
   },
   {
+    id: "acc_acme",
     name: "Acme Corp",
     website: "acme.com",
     phone: "+1 (555) 100-2000",
@@ -159,10 +176,15 @@ const initialAccounts: Account[] = [
     lastActivityDate: "2 hours ago",
     initials: "AC",
     contacts: [{ name: "Sarah Johnson", email: "sarah@acme.com", phone: "+1 (555) 123-4567" }],
+    opportunities: [
+      { name: "Acme Corp - Enterprise Plan", amount: "$10,000", stage: "Negotiation/Review", closeDate: "2024-06-30" },
+      { name: "Acme Corp - Support Add-on", amount: "$2,500", stage: "Closed Won", closeDate: "2024-03-15" },
+    ],
     description: ["Key enterprise account", "Expanding to EU markets"],
     createdDate: "Jan 15, 2024",
   },
   {
+    id: "acc_ts",
     name: "TechStart",
     website: "techstart.io",
     phone: "+1 (555) 200-3000",
@@ -174,10 +196,14 @@ const initialAccounts: Account[] = [
     lastActivityDate: "1 day ago",
     initials: "TS",
     contacts: [{ name: "Michael Chen", email: "m.chen@techstart.io", phone: "+1 (555) 234-5678" }],
+    opportunities: [
+      { name: "TechStart - Starter Plan", amount: "$5,200", stage: "Qualification", closeDate: "2024-07-15" },
+    ],
     description: ["Interested in API integrations"],
     createdDate: "Mar 3, 2024",
   },
   {
+    id: "acc_gf",
     name: "GlobalFin",
     website: "globalfin.com",
     phone: "+1 (555) 300-4000",
@@ -189,10 +215,15 @@ const initialAccounts: Account[] = [
     lastActivityDate: "3 days ago",
     initials: "GF",
     contacts: [{ name: "Emily Rodriguez", email: "emily@globalfin.com", phone: "+1 (555) 345-6789" }],
+    opportunities: [
+      { name: "GlobalFin - Compliance Module", amount: "$18,000", stage: "Proposal/Price Quote", closeDate: "2024-08-01" },
+      { name: "GlobalFin - Data Analytics", amount: "$6,000", stage: "Closed Won", closeDate: "2024-02-28" },
+    ],
     description: ["Needs compliance features", "Budget approval pending"],
     createdDate: "Feb 20, 2024",
   },
   {
+    id: "acc_il",
     name: "Innovate Labs",
     website: "innovate.co",
     phone: "+1 (555) 400-5000",
@@ -204,10 +235,15 @@ const initialAccounts: Account[] = [
     lastActivityDate: "5 hours ago",
     initials: "IL",
     contacts: [{ name: "James Wilson", email: "jwilson@innovate.co", phone: "+1 (555) 456-7890" }],
+    opportunities: [
+      { name: "Innovate Labs - Pro Plan", amount: "$12,000", stage: "Negotiation/Review", closeDate: "2024-05-20" },
+      { name: "Innovate Labs - Training Package", amount: "$3,750", stage: "Closed Won", closeDate: "2024-01-10" },
+    ],
     description: ["Champion for internal adoption"],
     createdDate: "Dec 8, 2023",
   },
   {
+    id: "acc_br",
     name: "BuildRight",
     website: "buildright.com",
     phone: "+1 (555) 500-6000",
@@ -219,10 +255,14 @@ const initialAccounts: Account[] = [
     lastActivityDate: "2 weeks ago",
     initials: "BR",
     contacts: [{ name: "Lisa Thompson", email: "lisa@buildright.com", phone: "+1 (555) 567-8901" }],
+    opportunities: [
+      { name: "BuildRight - Basic Plan", amount: "$4,300", stage: "Closed Lost", closeDate: "2024-03-01" },
+    ],
     description: ["Lost due to budget cuts", "May return Q3"],
     createdDate: "Nov 12, 2023",
   },
   {
+    id: "acc_ne",
     name: "NextEra",
     website: "nextera.io",
     phone: "+1 (555) 600-7000",
@@ -234,10 +274,15 @@ const initialAccounts: Account[] = [
     lastActivityDate: "1 hour ago",
     initials: "NE",
     contacts: [{ name: "David Kim", email: "dkim@nextera.io", phone: "+1 (555) 678-9012" }],
+    opportunities: [
+      { name: "NextEra - Enterprise Suite", amount: "$25,000", stage: "Closed Won", closeDate: "2024-01-30" },
+      { name: "NextEra - API Premium", amount: "$6,000", stage: "Negotiation/Review", closeDate: "2024-06-15" },
+    ],
     description: ["VIP account", "Quarterly business reviews scheduled"],
     createdDate: "Oct 5, 2023",
   },
   {
+    id: "acc_ed",
     name: "EuroDesign",
     website: "eurodesign.eu",
     phone: "+48 22 100 2000",
@@ -249,10 +294,14 @@ const initialAccounts: Account[] = [
     lastActivityDate: "4 days ago",
     initials: "ED",
     contacts: [{ name: "Anna Kowalski", email: "anna@eurodesign.eu", phone: "+48 22 123 4567" }],
+    opportunities: [
+      { name: "EuroDesign - EU Starter", amount: "$9,800", stage: "Closed Won", closeDate: "2024-04-22" },
+    ],
     description: ["EU data residency required"],
     createdDate: "Apr 18, 2024",
   },
   {
+    id: "acc_sw",
     name: "SolarWind",
     website: "solarwind.com",
     phone: "+1 (555) 700-8000",
@@ -264,10 +313,15 @@ const initialAccounts: Account[] = [
     lastActivityDate: "6 hours ago",
     initials: "SW",
     contacts: [{ name: "Robert Garcia", email: "rgarcia@solarwind.com", phone: "+1 (555) 789-0123" }],
+    opportunities: [
+      { name: "SolarWind - Growth Plan", amount: "$14,000", stage: "Closed Won", closeDate: "2023-11-15" },
+      { name: "SolarWind - Multi-Office Expansion", amount: "$4,400", stage: "Qualification", closeDate: "2024-09-01" },
+    ],
     description: ["Expanding to 3 new offices"],
     createdDate: "Sep 22, 2023",
   },
   {
+    id: "acc_cn",
     name: "CloudNine",
     website: "cloudnine.dev",
     phone: "+1 (555) 800-9000",
@@ -279,10 +333,15 @@ const initialAccounts: Account[] = [
     lastActivityDate: "Yesterday",
     initials: "CN",
     contacts: [{ name: "Priya Patel", email: "priya@cloudnine.dev", phone: "+1 (555) 890-1234" }],
+    opportunities: [
+      { name: "CloudNine - Annual License", amount: "$18,000", stage: "Closed Won", closeDate: "2024-02-15" },
+      { name: "CloudNine - Integration Add-on", amount: "$4,100", stage: "Proposal/Price Quote", closeDate: "2024-07-01" },
+    ],
     description: ["Referred by David Kim", "Wants annual billing discount"],
     createdDate: "Jan 30, 2024",
   },
   {
+    id: "acc_sb",
     name: "SteelBridge",
     website: "steelbridge.co",
     phone: "+1 (555) 900-1000",
@@ -294,6 +353,9 @@ const initialAccounts: Account[] = [
     lastActivityDate: "1 month ago",
     initials: "SB",
     contacts: [{ name: "Tom Anderson", email: "tom@steelbridge.co", phone: "+1 (555) 901-2345" }],
+    opportunities: [
+      { name: "SteelBridge - Enterprise Plan", amount: "$6,700", stage: "Closed Lost", closeDate: "2023-12-01" },
+    ],
     description: ["Contract expired", "Follow up in 6 months"],
     createdDate: "Aug 14, 2023",
   },
@@ -343,7 +405,7 @@ export default function AccountsPage() {
     if (!selectedAccount) return;
     setAccountList((prev) =>
       prev.map((a) =>
-        a.name === selectedAccount.name
+        a.id === selectedAccount.id
           ? {
               ...a,
               ...editForm,
@@ -359,7 +421,7 @@ export default function AccountsPage() {
   const handleReject = () => {
     if (!selectedAccount) return;
     setAccountList((prev) =>
-      prev.filter((a) => a.name !== selectedAccount.name)
+      prev.filter((a) => a.id !== selectedAccount.id)
     );
     setSelectedAccount(null);
   };
@@ -393,15 +455,17 @@ export default function AccountsPage() {
     setAccountList((prev) =>
       prev
         .map((a) =>
-          a.name === mergeTarget.name
+          a.id === mergeTarget.id
             ? {
                 ...a,
                 ...mergeForm,
                 initials: mergeForm.name.split(" ").map((w) => w[0]).join("").toUpperCase().slice(0, 2),
+                contacts: [...a.contacts, ...selectedAccount.contacts],
+                opportunities: [...a.opportunities, ...selectedAccount.opportunities],
               }
             : a
         )
-        .filter((a) => a.name !== selectedAccount.name)
+        .filter((a) => a.id !== selectedAccount.id)
     );
     setSelectedAccount(null);
     setSheetView("detail");
@@ -409,7 +473,7 @@ export default function AccountsPage() {
   };
 
   const filteredMergeAccounts = accountList.filter((a) => {
-    if (a.name === selectedAccount?.name) return false;
+    if (a.id === selectedAccount?.id) return false;
     if (a.status === "Pending Approval") return false;
     if (!mergeSearch) return true;
     const q = mergeSearch.toLowerCase();
@@ -490,7 +554,7 @@ export default function AccountsPage() {
             <TableBody>
               {accountList.map((account) => (
                 <TableRow
-                  key={account.name}
+                  key={account.id}
                   className={`cursor-pointer ${account.status === "Pending Approval" ? "bg-violet-50/50 hover:bg-violet-50 dark:bg-violet-950/20 dark:hover:bg-violet-950/30" : ""}`}
                   onClick={() => handleSelectAccount(account)}
                 >
@@ -593,7 +657,7 @@ export default function AccountsPage() {
           }
         }}
       >
-        <SheetContent className={`overflow-y-auto ${sheetView === "merge" ? "sm:max-w-3xl" : "sm:max-w-md"}`}>
+        <SheetContent className={`overflow-y-auto ${sheetView === "merge" ? "sm:max-w-2xl" : "sm:max-w-md"}`}>
           {selectedAccount && selectedAccount.status === "Pending Approval" && sheetView === "approval" && (
             <>
               <SheetHeader>
@@ -676,29 +740,27 @@ export default function AccountsPage() {
                 <div className="flex flex-col gap-2">
                   <div className="flex gap-2">
                     <Button
+                      variant="outline"
+                      className="flex-1 cursor-pointer border-rose-200 bg-rose-50 text-rose-600 hover:bg-rose-100 hover:text-rose-700 dark:border-rose-800 dark:bg-rose-950/30 dark:text-rose-400 dark:hover:bg-rose-950/50"
+                      onClick={handleReject}
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      className="flex-1 cursor-pointer bg-violet-600 text-white hover:bg-violet-700"
+                      onClick={handleStartMergeSearch}
+                    >
+                      <GitMerge className="mr-2 size-4" />
+                      Merge with...
+                    </Button>
+                    <Button
                       className="flex-1 cursor-pointer bg-emerald-600 text-white hover:bg-emerald-700"
                       onClick={handleApprove}
                     >
                       <Check className="mr-2 size-4" />
                       Approve
                     </Button>
-                    <Button
-                      variant="outline"
-                      className="flex-1 cursor-pointer border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700 dark:border-red-800 dark:text-red-400 dark:hover:bg-red-950/30"
-                      onClick={handleReject}
-                    >
-                      <X className="mr-2 size-4" />
-                      Reject
-                    </Button>
                   </div>
-                  <Button
-                    variant="outline"
-                    className="w-full cursor-pointer"
-                    onClick={handleStartMergeSearch}
-                  >
-                    <GitMerge className="mr-2 size-4" />
-                    Merge with Existing...
-                  </Button>
                 </div>
               </div>
             </>
@@ -745,7 +807,7 @@ export default function AccountsPage() {
                   )}
                   {filteredMergeAccounts.map((account) => (
                     <button
-                      key={account.name}
+                      key={account.id}
                       type="button"
                       className="flex w-full cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-left transition-colors hover:bg-muted"
                       onClick={() => handleSelectMergeTarget(account)}
@@ -791,14 +853,22 @@ export default function AccountsPage() {
                   <div className="flex-1">
                     <SheetTitle>Merge Accounts</SheetTitle>
                     <SheetDescription>
-                      Click on a value to use it in the merged result, or edit directly
+                      cai data will overwrite the existing record
                     </SheetDescription>
                   </div>
                 </div>
               </SheetHeader>
 
               <div className="flex flex-col gap-4 px-4 pb-4">
-                <div className="grid grid-cols-3 gap-3">
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="flex items-center gap-2 rounded-lg border border-violet-200 bg-violet-50 px-3 py-2.5 dark:border-violet-800 dark:bg-violet-950/30">
+                    <Sparkles className="size-4 shrink-0 text-violet-600" />
+                    <div className="min-w-0">
+                      <p className="truncate text-xs font-semibold text-violet-700 dark:text-violet-300">{selectedAccount.name}</p>
+                      <p className="truncate text-[10px] text-violet-600/70 dark:text-violet-400/70">Created by cai</p>
+                    </div>
+                  </div>
+
                   <div className="flex items-center gap-2 rounded-lg border px-3 py-2.5">
                     <Avatar className="size-7 shrink-0">
                       <AvatarFallback className="bg-primary/10 text-[10px] font-medium text-primary">
@@ -810,79 +880,137 @@ export default function AccountsPage() {
                       <p className="truncate text-[10px] text-muted-foreground">Existing Record</p>
                     </div>
                   </div>
-
-                  <div className="flex items-center gap-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2.5 dark:border-amber-800 dark:bg-amber-950/30">
-                    <GitMerge className="size-4 shrink-0 text-amber-600" />
-                    <div className="min-w-0">
-                      <p className="truncate text-xs font-semibold text-amber-700 dark:text-amber-300">Merged Result</p>
-                      <p className="truncate text-[10px] text-amber-600/70 dark:text-amber-400/70">Final record</p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-2 rounded-lg border border-violet-200 bg-violet-50 px-3 py-2.5 dark:border-violet-800 dark:bg-violet-950/30">
-                    <Sparkles className="size-4 shrink-0 text-violet-600" />
-                    <div className="min-w-0">
-                      <p className="truncate text-xs font-semibold text-violet-700 dark:text-violet-300">{selectedAccount.name}</p>
-                      <p className="truncate text-[10px] text-violet-600/70 dark:text-violet-400/70">Created by cai</p>
-                    </div>
-                  </div>
                 </div>
 
                 <div className="space-y-1">
                   {MERGEABLE_FIELDS.map(({ key, label }) => {
-                    const existingVal = mergeTarget[key]?.trim() || "";
                     const caiVal = (selectedAccount[key] as string)?.trim() || "";
-                    const conflict = getConflictType(existingVal, caiVal);
-                    const isConflict = conflict === "conflict";
+                    const existingVal = mergeTarget[key]?.trim() || "";
+                    const isDifferent = existingVal !== caiVal && !!caiVal;
 
                     return (
-                      <div key={key} className={`grid grid-cols-3 gap-3 rounded-lg px-1 py-2 ${isConflict ? "bg-amber-50/50 dark:bg-amber-950/10" : ""}`}>
-                        <div>
-                          <p className="mb-1 text-[10px] font-medium text-muted-foreground">{label}</p>
-                          <button
-                            type="button"
-                            className={`w-full cursor-pointer rounded-md border px-2.5 py-1.5 text-left text-xs transition-colors ${
-                              mergeForm[key] === existingVal && existingVal
-                                ? "border-primary bg-primary/5 font-medium text-primary"
-                                : "border-border text-foreground hover:border-primary/50 hover:bg-muted"
-                            } ${!existingVal ? "border-dashed text-muted-foreground" : ""}`}
-                            onClick={() => { if (existingVal) setMergeForm((prev) => ({ ...prev, [key]: existingVal })); }}
-                          >
-                            {existingVal || "—"}
-                          </button>
-                        </div>
-
+                      <div key={key} className={`grid grid-cols-2 gap-3 rounded-lg px-1 py-2 ${isDifferent ? "bg-violet-50/30 dark:bg-violet-950/10" : ""}`}>
                         <div>
                           <div className="mb-1 flex items-center gap-1">
                             <p className="text-[10px] font-medium text-muted-foreground">{label}</p>
-                            {isConflict && <Zap className="size-2.5 text-amber-500" />}
+                            {isDifferent && <Zap className="size-2.5 text-violet-500" />}
                           </div>
+                          <div className={`rounded-md border border-dashed border-violet-200 px-2.5 py-1.5 text-xs dark:border-violet-800 ${!caiVal ? "text-muted-foreground" : "text-foreground"}`}>
+                            {caiVal || "—"}
+                          </div>
+                        </div>
+
+                        <div>
+                          <p className="mb-1 text-[10px] font-medium text-muted-foreground">{label}</p>
                           <Input
-                            className="h-auto border-amber-200 bg-amber-50/50 px-2.5 py-1.5 text-xs focus-visible:ring-amber-400 dark:border-amber-800 dark:bg-amber-950/20"
+                            className="h-auto px-2.5 py-1.5 text-xs"
                             value={mergeForm[key] || ""}
                             onChange={(e) => setMergeForm((prev) => ({ ...prev, [key]: e.target.value }))}
                             placeholder="—"
                           />
                         </div>
-
-                        <div>
-                          <p className="mb-1 text-[10px] font-medium text-muted-foreground">{label}</p>
-                          <button
-                            type="button"
-                            className={`w-full cursor-pointer rounded-md border px-2.5 py-1.5 text-left text-xs transition-colors ${
-                              mergeForm[key] === caiVal && caiVal
-                                ? "border-violet-400 bg-violet-50 font-medium text-violet-700 dark:border-violet-600 dark:bg-violet-950/30 dark:text-violet-300"
-                                : "border-border text-foreground hover:border-violet-300 hover:bg-muted"
-                            } ${!caiVal ? "border-dashed text-muted-foreground" : ""}`}
-                            onClick={() => { if (caiVal) setMergeForm((prev) => ({ ...prev, [key]: caiVal })); }}
-                          >
-                            {caiVal || "—"}
-                          </button>
-                        </div>
                       </div>
                     );
                   })}
                 </div>
+
+                {selectedAccount.contacts.length > 0 && (
+                  <>
+                    <Separator />
+                    <div>
+                      <div className="mb-2 flex items-center justify-between">
+                        <p className="text-xs font-medium text-muted-foreground">
+                          cai Contacts ({selectedAccount.contacts.length})
+                        </p>
+                        <div className="flex items-center gap-1 rounded-full border border-violet-200 bg-violet-50 px-2 py-0.5 dark:border-violet-800 dark:bg-violet-950/30">
+                          <ArrowRight className="size-3 text-violet-600" />
+                          <span className="text-[10px] font-medium text-violet-700 dark:text-violet-300">
+                            Transferring to {mergeTarget.name}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="space-y-1.5">
+                        {selectedAccount.contacts.map((contact) => (
+                          <div key={contact.email} className="flex items-center justify-between rounded-md border border-violet-100 p-2.5 dark:border-violet-900">
+                            <div>
+                              <p className="text-xs font-medium">{contact.name}</p>
+                              <p className="text-[10px] text-muted-foreground">{contact.email}</p>
+                            </div>
+                            {contact.phone && (
+                              <span className="text-[10px] text-muted-foreground">{contact.phone}</span>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </>
+                )}
+
+                {selectedAccount.opportunities.length > 0 && (
+                  <>
+                    <Separator />
+                    <div>
+                      <div className="mb-2 flex items-center justify-between">
+                        <p className="text-xs font-medium text-muted-foreground">
+                          cai Opportunities ({selectedAccount.opportunities.length})
+                        </p>
+                        <div className="flex items-center gap-1 rounded-full border border-violet-200 bg-violet-50 px-2 py-0.5 dark:border-violet-800 dark:bg-violet-950/30">
+                          <ArrowRight className="size-3 text-violet-600" />
+                          <span className="text-[10px] font-medium text-violet-700 dark:text-violet-300">
+                            Transferring to {mergeTarget.name}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="space-y-1.5">
+                        {selectedAccount.opportunities.map((opp) => (
+                          <div key={opp.name} className="flex items-center justify-between rounded-md border border-violet-100 p-2.5 dark:border-violet-900">
+                            <div>
+                              <p className="text-xs font-medium">{opp.name}</p>
+                              <p className="text-[10px] text-muted-foreground">{opp.stage}</p>
+                            </div>
+                            <div className="text-right">
+                              <p className="text-xs font-semibold">{opp.amount}</p>
+                              <p className="text-[10px] text-muted-foreground">{opp.closeDate}</p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </>
+                )}
+
+                {mergeTarget.opportunities.length > 0 && (
+                  <>
+                    <Separator />
+                    <div>
+                      <div className="mb-2 flex items-center justify-between">
+                        <p className="text-xs font-medium text-muted-foreground">
+                          Existing Opportunities ({mergeTarget.opportunities.length})
+                        </p>
+                        <div className="flex items-center gap-1 rounded-full border border-emerald-200 bg-emerald-50 px-2 py-0.5 dark:border-emerald-800 dark:bg-emerald-950/30">
+                          <Check className="size-3 text-emerald-600" />
+                          <span className="text-[10px] font-medium text-emerald-700 dark:text-emerald-300">
+                            Stays in {mergeTarget.name}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="space-y-1.5">
+                        {mergeTarget.opportunities.map((opp) => (
+                          <div key={opp.name} className="flex items-center justify-between rounded-md border p-2.5">
+                            <div>
+                              <p className="text-xs font-medium">{opp.name}</p>
+                              <p className="text-[10px] text-muted-foreground">{opp.stage}</p>
+                            </div>
+                            <div className="text-right">
+                              <p className="text-xs font-semibold">{opp.amount}</p>
+                              <p className="text-[10px] text-muted-foreground">{opp.closeDate}</p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </>
+                )}
 
                 <Separator />
 
