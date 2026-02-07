@@ -2,16 +2,12 @@
 
 import { useState } from "react";
 import {
-  ArrowLeft,
-  ArrowRight,
   Building2,
-  Calendar,
   Check,
   ChevronDown,
   CircleDot,
   CreditCard,
   DollarSign,
-  GitMerge,
   Globe,
   MoreHorizontal,
   Plus,
@@ -19,9 +15,6 @@ import {
   Sparkles,
   Target,
   TrendingUp,
-  User,
-  X,
-  Zap,
 } from "lucide-react";
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -90,27 +83,7 @@ interface Opportunity {
   createdDate: string;
 }
 
-type SheetView = "detail" | "approval" | "search" | "merge";
-
-type MergeableField = "name" | "amount" | "stage" | "probability" | "closeDate" | "accountName" | "contactName";
-
-const MERGEABLE_FIELDS: { key: MergeableField; label: string }[] = [
-  { key: "name", label: "Opportunity Name" },
-  { key: "amount", label: "Amount" },
-  { key: "stage", label: "Stage" },
-  { key: "probability", label: "Probability" },
-  { key: "closeDate", label: "Close Date" },
-  { key: "accountName", label: "Account Name" },
-  { key: "contactName", label: "Contact Name" },
-];
-
-function getConflictType(existing: string, incoming: string): "same" | "one-empty" | "conflict" {
-  const a = existing?.trim() || "";
-  const b = incoming?.trim() || "";
-  if (a === b) return "same";
-  if (!a || !b) return "one-empty";
-  return "conflict";
-}
+type SheetView = "detail" | "approval";
 
 const initialOpportunities: Opportunity[] = [
   {
@@ -357,15 +330,10 @@ export default function OpportunitiesPage() {
   const [selectedOpportunity, setSelectedOpportunity] = useState<Opportunity | null>(null);
   const [editForm, setEditForm] = useState<Partial<Opportunity>>({});
   const [sheetView, setSheetView] = useState<SheetView>("detail");
-  const [mergeTarget, setMergeTarget] = useState<Opportunity | null>(null);
-  const [mergeSearch, setMergeSearch] = useState("");
-  const [mergeForm, setMergeForm] = useState<Record<MergeableField, string>>({} as Record<MergeableField, string>);
 
   const handleSelectOpportunity = (opportunity: Opportunity) => {
     setSelectedOpportunity(opportunity);
     setSheetView(opportunity.status === "Pending Approval" ? "approval" : "detail");
-    setMergeTarget(null);
-    setMergeSearch("");
     setEditForm({
       name: opportunity.name,
       amount: opportunity.amount,
@@ -405,59 +373,6 @@ export default function OpportunitiesPage() {
   const updateField = (field: keyof Opportunity, value: string) => {
     setEditForm((prev) => ({ ...prev, [field]: value }));
   };
-
-  const handleStartMergeSearch = () => {
-    setSheetView("search");
-    setMergeSearch("");
-  };
-
-  const handleSelectMergeTarget = (target: Opportunity) => {
-    setMergeTarget(target);
-    setSheetView("merge");
-    const resolved = {} as Record<MergeableField, string>;
-    for (const { key } of MERGEABLE_FIELDS) {
-      const existingVal = target[key]?.trim() || "";
-      const caiVal = (selectedOpportunity?.[key] as string)?.trim() || "";
-      const conflict = getConflictType(existingVal, caiVal);
-      if (conflict === "same") resolved[key] = existingVal;
-      else if (conflict === "one-empty") resolved[key] = existingVal || caiVal;
-      else resolved[key] = caiVal;
-    }
-    setMergeForm(resolved);
-  };
-
-  const handleMerge = () => {
-    if (!selectedOpportunity || !mergeTarget) return;
-    setOpportunityList((prev) =>
-      prev
-        .map((o) =>
-          o.id === mergeTarget.id
-            ? {
-                ...o,
-                ...mergeForm,
-                stage: mergeForm.stage as OpportunityStage,
-                initials: mergeForm.name.split(" ").map((w) => w[0]).join("").toUpperCase().slice(0, 2),
-              }
-            : o
-        )
-        .filter((o) => o.id !== selectedOpportunity.id)
-    );
-    setSelectedOpportunity(null);
-    setSheetView("detail");
-    setMergeTarget(null);
-  };
-
-  const filteredMergeOpportunities = opportunityList.filter((o) => {
-    if (o.id === selectedOpportunity?.id) return false;
-    if (o.status === "Pending Approval") return false;
-    if (!mergeSearch) return true;
-    const q = mergeSearch.toLowerCase();
-    return (
-      o.name.toLowerCase().includes(q) ||
-      o.accountName.toLowerCase().includes(q) ||
-      o.contactName.toLowerCase().includes(q)
-    );
-  });
 
   return (
     <>
@@ -624,12 +539,10 @@ export default function OpportunitiesPage() {
           if (!open) {
             setSelectedOpportunity(null);
             setSheetView("detail");
-            setMergeTarget(null);
-            setMergeSearch("");
           }
         }}
       >
-        <SheetContent className={`overflow-y-auto ${sheetView === "merge" ? "sm:max-w-2xl" : "sm:max-w-md"}`}>
+        <SheetContent className="overflow-y-auto sm:max-w-md">
           {selectedOpportunity && selectedOpportunity.status === "Pending Approval" && sheetView === "approval" && (
             <>
               <SheetHeader>
@@ -722,217 +635,11 @@ export default function OpportunitiesPage() {
                     Cancel
                   </Button>
                   <Button
-                    className="flex-1 cursor-pointer bg-violet-600 text-white hover:bg-violet-700"
-                    onClick={handleStartMergeSearch}
-                  >
-                    <GitMerge className="mr-2 size-4" />
-                    Merge with...
-                  </Button>
-                  <Button
                     className="flex-1 cursor-pointer bg-emerald-600 text-white hover:bg-emerald-700"
                     onClick={handleApprove}
                   >
                     <Check className="mr-2 size-4" />
                     Approve
-                  </Button>
-                </div>
-              </div>
-            </>
-          )}
-
-          {selectedOpportunity && selectedOpportunity.status === "Pending Approval" && sheetView === "search" && (
-            <>
-              <SheetHeader>
-                <div className="flex items-center gap-2">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="size-8 shrink-0 cursor-pointer"
-                    onClick={() => setSheetView("approval")}
-                  >
-                    <ArrowLeft className="size-4" />
-                  </Button>
-                  <div>
-                    <SheetTitle>Merge with Existing</SheetTitle>
-                    <SheetDescription>
-                      Select an opportunity to merge with {selectedOpportunity.name}
-                    </SheetDescription>
-                  </div>
-                </div>
-              </SheetHeader>
-
-              <div className="flex flex-col gap-3 px-4 pb-4">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-                  <Input
-                    placeholder="Search opportunities..."
-                    className="pl-9"
-                    value={mergeSearch}
-                    onChange={(e) => setMergeSearch(e.target.value)}
-                    autoFocus
-                  />
-                </div>
-
-                <div className="space-y-1">
-                  {filteredMergeOpportunities.length === 0 && (
-                    <p className="py-8 text-center text-sm text-muted-foreground">
-                      No opportunities found
-                    </p>
-                  )}
-                  {filteredMergeOpportunities.map((opportunity) => (
-                    <button
-                      key={opportunity.id}
-                      type="button"
-                      className="flex w-full cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-left transition-colors hover:bg-muted"
-                      onClick={() => handleSelectMergeTarget(opportunity)}
-                    >
-                      <Avatar className="size-8 shrink-0">
-                        <AvatarFallback className="bg-primary/10 text-xs font-medium text-primary">
-                          {opportunity.initials}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div className="min-w-0 flex-1">
-                        <p className="truncate text-sm font-medium">
-                          {opportunity.name}
-                        </p>
-                        <p className="truncate text-xs text-muted-foreground">
-                          {opportunity.accountName} · {opportunity.contactName}
-                        </p>
-                      </div>
-                      <Badge variant={statusVariant[opportunity.status]} className="shrink-0">
-                        {opportunity.status}
-                      </Badge>
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </>
-          )}
-
-          {selectedOpportunity && selectedOpportunity.status === "Pending Approval" && sheetView === "merge" && mergeTarget && (
-            <>
-              <SheetHeader>
-                <div className="flex items-center gap-2">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="size-8 shrink-0 cursor-pointer"
-                    onClick={() => {
-                      setSheetView("search");
-                      setMergeTarget(null);
-                    }}
-                  >
-                    <ArrowLeft className="size-4" />
-                  </Button>
-                  <div className="flex-1">
-                    <SheetTitle>Merge Opportunities</SheetTitle>
-                    <SheetDescription>
-                      cai data will overwrite the existing record
-                    </SheetDescription>
-                  </div>
-                </div>
-              </SheetHeader>
-
-              <div className="flex flex-col gap-4 px-4 pb-4">
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="flex items-center gap-2 rounded-lg border border-violet-200 bg-violet-50 px-3 py-2.5 dark:border-violet-800 dark:bg-violet-950/30">
-                    <Sparkles className="size-4 shrink-0 text-violet-600" />
-                    <div className="min-w-0">
-                      <p className="truncate text-xs font-semibold text-violet-700 dark:text-violet-300">{selectedOpportunity.name}</p>
-                      <p className="truncate text-[10px] text-violet-600/70 dark:text-violet-400/70">Created by cai</p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-2 rounded-lg border px-3 py-2.5">
-                    <Avatar className="size-7 shrink-0">
-                      <AvatarFallback className="bg-primary/10 text-[10px] font-medium text-primary">
-                        {mergeTarget.initials}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className="min-w-0">
-                      <p className="truncate text-xs font-semibold">{mergeTarget.name}</p>
-                      <p className="truncate text-[10px] text-muted-foreground">Existing Record</p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="space-y-1">
-                  {MERGEABLE_FIELDS.map(({ key, label }) => {
-                    const caiVal = (selectedOpportunity[key] as string)?.trim() || "";
-                    const existingVal = mergeTarget[key]?.trim() || "";
-                    const isDifferent = existingVal !== caiVal && !!caiVal;
-
-                    return (
-                      <div key={key} className={`grid grid-cols-2 gap-3 rounded-lg px-1 py-2 ${isDifferent ? "bg-violet-50/30 dark:bg-violet-950/10" : ""}`}>
-                        <div>
-                          <div className="mb-1 flex items-center gap-1">
-                            <p className="text-[10px] font-medium text-muted-foreground">{label}</p>
-                            {isDifferent && <Zap className="size-2.5 text-violet-500" />}
-                          </div>
-                          <div className={`rounded-md border border-dashed border-violet-200 px-2.5 py-1.5 text-xs dark:border-violet-800 ${!caiVal ? "text-muted-foreground" : "text-foreground"}`}>
-                            {caiVal || "—"}
-                          </div>
-                        </div>
-
-                        <div>
-                          <p className="mb-1 text-[10px] font-medium text-muted-foreground">{label}</p>
-                          <Input
-                            className="h-auto px-2.5 py-1.5 text-xs"
-                            value={mergeForm[key] || ""}
-                            onChange={(e) => setMergeForm((prev) => ({ ...prev, [key]: e.target.value }))}
-                            placeholder="—"
-                          />
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-
-                {mergeTarget.accountId !== selectedOpportunity.accountId && (
-                  <>
-                    <Separator />
-                    <div className="flex items-center gap-2 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 dark:border-amber-800 dark:bg-amber-950/30">
-                      <Building2 className="size-4 shrink-0 text-amber-600" />
-                      <div className="flex items-center gap-1.5 text-sm font-medium text-amber-800 dark:text-amber-300">
-                        <span>{selectedOpportunity.accountName}</span>
-                        <ArrowRight className="size-3.5" />
-                        <span>{mergeTarget.accountName}</span>
-                      </div>
-                    </div>
-                  </>
-                )}
-
-                {mergeTarget.contactId !== selectedOpportunity.contactId && (
-                  <>
-                    {mergeTarget.accountId === selectedOpportunity.accountId && <Separator />}
-                    <div className="flex items-center gap-2 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 dark:border-amber-800 dark:bg-amber-950/30">
-                      <User className="size-4 shrink-0 text-amber-600" />
-                      <div className="flex items-center gap-1.5 text-sm font-medium text-amber-800 dark:text-amber-300">
-                        <span>{selectedOpportunity.contactName}</span>
-                        <ArrowRight className="size-3.5" />
-                        <span>{mergeTarget.contactName}</span>
-                      </div>
-                    </div>
-                  </>
-                )}
-
-                <Separator />
-
-                <div className="flex justify-end gap-2">
-                  <Button
-                    variant="outline"
-                    className="cursor-pointer border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700 dark:border-red-800 dark:text-red-400 dark:hover:bg-red-950/30"
-                    onClick={handleReject}
-                  >
-                    <X className="mr-2 size-4" />
-                    Reject
-                  </Button>
-                  <Button
-                    className="cursor-pointer bg-emerald-600 text-white hover:bg-emerald-700"
-                    onClick={handleMerge}
-                  >
-                    <GitMerge className="mr-2 size-4" />
-                    Merge
                   </Button>
                 </div>
               </div>
