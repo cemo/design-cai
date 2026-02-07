@@ -57,38 +57,13 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-type AccountStatus = "Active" | "Inactive" | "Pending Approval";
-
-interface Contact {
-  name: string;
-  email: string;
-  phone: string;
-}
-
-interface Opportunity {
-  name: string;
-  amount: string;
-  stage: string;
-  closeDate: string;
-}
-
-interface Account {
-  id: string;
-  name: string;
-  website: string;
-  phone: string;
-  employees: string;
-  taxNumber: string;
-  taxOffice: string;
-  status: AccountStatus;
-  totalRevenue: string;
-  lastActivityDate: string;
-  initials: string;
-  contacts: Contact[];
-  opportunities: Opportunity[];
-  description: string[];
-  createdDate: string;
-}
+import {
+  useCrmData,
+  type Account,
+  type AccountStatus,
+  type AccountContact as Contact,
+  type AccountOpportunity as Opportunity,
+} from "@/components/crm-data-provider";
 
 type SheetView = "detail" | "approval" | "search" | "merge";
 
@@ -111,256 +86,6 @@ function getConflictType(existing: string, incoming: string): "same" | "one-empt
   return "conflict";
 }
 
-const initialAccounts: Account[] = [
-  {
-    id: "acc_tt",
-    name: "Türk Traktör",
-    website: "turktraktor.com.tr",
-    phone: "",
-    employees: "",
-    taxNumber: "",
-    taxOffice: "",
-    status: "Pending Approval",
-    totalRevenue: "$185,000",
-    lastActivityDate: "2 hours ago",
-    initials: "TT",
-    contacts: [{ name: "Ayşe Demir", email: "ayse.demir@turktraktor.com.tr", phone: "" }],
-    opportunities: [],
-    description: ["Auto-created by cai from email analysis"],
-    createdDate: "Feb 6, 2024",
-  },
-  {
-    id: "acc_cat",
-    name: "Caterpillar Turkey",
-    website: "caterpillar.com.tr",
-    phone: "",
-    employees: "",
-    taxNumber: "",
-    taxOffice: "",
-    status: "Pending Approval",
-    totalRevenue: "$92,000",
-    lastActivityDate: "5 hours ago",
-    initials: "CT",
-    contacts: [{ name: "Mehmet Yılmaz", email: "mehmet@caterpillar.com.tr", phone: "" }],
-    opportunities: [],
-    description: ["Auto-created by cai from email analysis"],
-    createdDate: "Feb 6, 2024",
-  },
-  {
-    id: "acc_jcb",
-    name: "JCB Latin America",
-    website: "jcb-latam.com",
-    phone: "",
-    employees: "",
-    taxNumber: "",
-    taxOffice: "",
-    status: "Pending Approval",
-    totalRevenue: "$340,000",
-    lastActivityDate: "4 days ago",
-    initials: "JL",
-    contacts: [{ name: "Carlos Mendez", email: "carlos@jcb-latam.com", phone: "" }],
-    opportunities: [],
-    description: ["Auto-created by cai from email analysis"],
-    createdDate: "Feb 6, 2024",
-  },
-  {
-    id: "acc_acme",
-    name: "Acme Corp",
-    website: "acme.com",
-    phone: "+1 (555) 100-2000",
-    employees: "250",
-    taxNumber: "12-3456789",
-    taxOffice: "San Francisco",
-    status: "Active",
-    totalRevenue: "$12,500",
-    lastActivityDate: "2 hours ago",
-    initials: "AC",
-    contacts: [{ name: "Sarah Johnson", email: "sarah@acme.com", phone: "+1 (555) 123-4567" }],
-    opportunities: [
-      { name: "Acme Corp - Enterprise Plan", amount: "$10,000", stage: "Negotiation/Review", closeDate: "2024-06-30" },
-      { name: "Acme Corp - Support Add-on", amount: "$2,500", stage: "Closed Won", closeDate: "2024-03-15" },
-    ],
-    description: ["Key enterprise account", "Expanding to EU markets"],
-    createdDate: "Jan 15, 2024",
-  },
-  {
-    id: "acc_ts",
-    name: "TechStart",
-    website: "techstart.io",
-    phone: "+1 (555) 200-3000",
-    employees: "45",
-    taxNumber: "98-7654321",
-    taxOffice: "Austin",
-    status: "Active",
-    totalRevenue: "$8,200",
-    lastActivityDate: "1 day ago",
-    initials: "TS",
-    contacts: [{ name: "Michael Chen", email: "m.chen@techstart.io", phone: "+1 (555) 234-5678" }],
-    opportunities: [
-      { name: "TechStart - Starter Plan", amount: "$5,200", stage: "Qualification", closeDate: "2024-07-15" },
-    ],
-    description: ["Interested in API integrations"],
-    createdDate: "Mar 3, 2024",
-  },
-  {
-    id: "acc_gf",
-    name: "GlobalFin",
-    website: "globalfin.com",
-    phone: "+1 (555) 300-4000",
-    employees: "1,200",
-    taxNumber: "55-1234567",
-    taxOffice: "New York",
-    status: "Active",
-    totalRevenue: "$24,000",
-    lastActivityDate: "3 days ago",
-    initials: "GF",
-    contacts: [{ name: "Emily Rodriguez", email: "emily@globalfin.com", phone: "+1 (555) 345-6789" }],
-    opportunities: [
-      { name: "GlobalFin - Compliance Module", amount: "$18,000", stage: "Proposal/Price Quote", closeDate: "2024-08-01" },
-      { name: "GlobalFin - Data Analytics", amount: "$6,000", stage: "Closed Won", closeDate: "2024-02-28" },
-    ],
-    description: ["Needs compliance features", "Budget approval pending"],
-    createdDate: "Feb 20, 2024",
-  },
-  {
-    id: "acc_il",
-    name: "Innovate Labs",
-    website: "innovate.co",
-    phone: "+1 (555) 400-5000",
-    employees: "80",
-    taxNumber: "33-9876543",
-    taxOffice: "Seattle",
-    status: "Active",
-    totalRevenue: "$15,750",
-    lastActivityDate: "5 hours ago",
-    initials: "IL",
-    contacts: [{ name: "James Wilson", email: "jwilson@innovate.co", phone: "+1 (555) 456-7890" }],
-    opportunities: [
-      { name: "Innovate Labs - Pro Plan", amount: "$12,000", stage: "Negotiation/Review", closeDate: "2024-05-20" },
-      { name: "Innovate Labs - Training Package", amount: "$3,750", stage: "Closed Won", closeDate: "2024-01-10" },
-    ],
-    description: ["Champion for internal adoption"],
-    createdDate: "Dec 8, 2023",
-  },
-  {
-    id: "acc_br",
-    name: "BuildRight",
-    website: "buildright.com",
-    phone: "+1 (555) 500-6000",
-    employees: "150",
-    taxNumber: "44-5678901",
-    taxOffice: "Chicago",
-    status: "Inactive",
-    totalRevenue: "$4,300",
-    lastActivityDate: "2 weeks ago",
-    initials: "BR",
-    contacts: [{ name: "Lisa Thompson", email: "lisa@buildright.com", phone: "+1 (555) 567-8901" }],
-    opportunities: [
-      { name: "BuildRight - Basic Plan", amount: "$4,300", stage: "Closed Lost", closeDate: "2024-03-01" },
-    ],
-    description: ["Lost due to budget cuts", "May return Q3"],
-    createdDate: "Nov 12, 2023",
-  },
-  {
-    id: "acc_ne",
-    name: "NextEra",
-    website: "nextera.io",
-    phone: "+1 (555) 600-7000",
-    employees: "320",
-    taxNumber: "66-4321098",
-    taxOffice: "Los Angeles",
-    status: "Active",
-    totalRevenue: "$31,000",
-    lastActivityDate: "1 hour ago",
-    initials: "NE",
-    contacts: [{ name: "David Kim", email: "dkim@nextera.io", phone: "+1 (555) 678-9012" }],
-    opportunities: [
-      { name: "NextEra - Enterprise Suite", amount: "$25,000", stage: "Closed Won", closeDate: "2024-01-30" },
-      { name: "NextEra - API Premium", amount: "$6,000", stage: "Negotiation/Review", closeDate: "2024-06-15" },
-    ],
-    description: ["VIP account", "Quarterly business reviews scheduled"],
-    createdDate: "Oct 5, 2023",
-  },
-  {
-    id: "acc_ed",
-    name: "EuroDesign",
-    website: "eurodesign.eu",
-    phone: "+48 22 100 2000",
-    employees: "60",
-    taxNumber: "PL-7654321098",
-    taxOffice: "Warsaw",
-    status: "Active",
-    totalRevenue: "$9,800",
-    lastActivityDate: "4 days ago",
-    initials: "ED",
-    contacts: [{ name: "Anna Kowalski", email: "anna@eurodesign.eu", phone: "+48 22 123 4567" }],
-    opportunities: [
-      { name: "EuroDesign - EU Starter", amount: "$9,800", stage: "Closed Won", closeDate: "2024-04-22" },
-    ],
-    description: ["EU data residency required"],
-    createdDate: "Apr 18, 2024",
-  },
-  {
-    id: "acc_sw",
-    name: "SolarWind",
-    website: "solarwind.com",
-    phone: "+1 (555) 700-8000",
-    employees: "200",
-    taxNumber: "77-8901234",
-    taxOffice: "Denver",
-    status: "Active",
-    totalRevenue: "$18,400",
-    lastActivityDate: "6 hours ago",
-    initials: "SW",
-    contacts: [{ name: "Robert Garcia", email: "rgarcia@solarwind.com", phone: "+1 (555) 789-0123" }],
-    opportunities: [
-      { name: "SolarWind - Growth Plan", amount: "$14,000", stage: "Closed Won", closeDate: "2023-11-15" },
-      { name: "SolarWind - Multi-Office Expansion", amount: "$4,400", stage: "Qualification", closeDate: "2024-09-01" },
-    ],
-    description: ["Expanding to 3 new offices"],
-    createdDate: "Sep 22, 2023",
-  },
-  {
-    id: "acc_cn",
-    name: "CloudNine",
-    website: "cloudnine.dev",
-    phone: "+1 (555) 800-9000",
-    employees: "95",
-    taxNumber: "88-2345678",
-    taxOffice: "Boston",
-    status: "Active",
-    totalRevenue: "$22,100",
-    lastActivityDate: "Yesterday",
-    initials: "CN",
-    contacts: [{ name: "Priya Patel", email: "priya@cloudnine.dev", phone: "+1 (555) 890-1234" }],
-    opportunities: [
-      { name: "CloudNine - Annual License", amount: "$18,000", stage: "Closed Won", closeDate: "2024-02-15" },
-      { name: "CloudNine - Integration Add-on", amount: "$4,100", stage: "Proposal/Price Quote", closeDate: "2024-07-01" },
-    ],
-    description: ["Referred by David Kim", "Wants annual billing discount"],
-    createdDate: "Jan 30, 2024",
-  },
-  {
-    id: "acc_sb",
-    name: "SteelBridge",
-    website: "steelbridge.co",
-    phone: "+1 (555) 900-1000",
-    employees: "500",
-    taxNumber: "99-3456789",
-    taxOffice: "Detroit",
-    status: "Inactive",
-    totalRevenue: "$6,700",
-    lastActivityDate: "1 month ago",
-    initials: "SB",
-    contacts: [{ name: "Tom Anderson", email: "tom@steelbridge.co", phone: "+1 (555) 901-2345" }],
-    opportunities: [
-      { name: "SteelBridge - Enterprise Plan", amount: "$6,700", stage: "Closed Lost", closeDate: "2023-12-01" },
-    ],
-    description: ["Contract expired", "Follow up in 6 months"],
-    createdDate: "Aug 14, 2023",
-  },
-];
-
 const statusVariant: Record<
   AccountStatus,
   "default" | "secondary" | "outline" | "destructive"
@@ -378,7 +103,15 @@ const stats = [
 ];
 
 export default function AccountsPage() {
-  const [accountList, setAccountList] = useState<Account[]>(initialAccounts);
+  const {
+    accounts,
+    filteredAccounts: accountList,
+    accountSearch,
+    setAccountSearch,
+    approveAccount,
+    rejectAccount,
+    mergeAccount,
+  } = useCrmData();
   const [selectedAccount, setSelectedAccount] = useState<Account | null>(null);
   const [editForm, setEditForm] = useState<Partial<Account>>({});
   const [sheetView, setSheetView] = useState<SheetView>("detail");
@@ -403,26 +136,13 @@ export default function AccountsPage() {
 
   const handleApprove = () => {
     if (!selectedAccount) return;
-    setAccountList((prev) =>
-      prev.map((a) =>
-        a.id === selectedAccount.id
-          ? {
-              ...a,
-              ...editForm,
-              status: "Active" as AccountStatus,
-              initials: (editForm.name || a.name).split(" ").map((w) => w[0]).join("").toUpperCase().slice(0, 2),
-            }
-          : a
-      )
-    );
+    approveAccount(selectedAccount.id, editForm);
     setSelectedAccount(null);
   };
 
   const handleReject = () => {
     if (!selectedAccount) return;
-    setAccountList((prev) =>
-      prev.filter((a) => a.id !== selectedAccount.id)
-    );
+    rejectAccount(selectedAccount.id);
     setSelectedAccount(null);
   };
 
@@ -452,27 +172,13 @@ export default function AccountsPage() {
 
   const handleMerge = () => {
     if (!selectedAccount || !mergeTarget) return;
-    setAccountList((prev) =>
-      prev
-        .map((a) =>
-          a.id === mergeTarget.id
-            ? {
-                ...a,
-                ...mergeForm,
-                initials: mergeForm.name.split(" ").map((w) => w[0]).join("").toUpperCase().slice(0, 2),
-                contacts: [...a.contacts, ...selectedAccount.contacts],
-                opportunities: [...a.opportunities, ...selectedAccount.opportunities],
-              }
-            : a
-        )
-        .filter((a) => a.id !== selectedAccount.id)
-    );
+    mergeAccount(selectedAccount.id, mergeTarget.id, mergeForm);
     setSelectedAccount(null);
     setSheetView("detail");
     setMergeTarget(null);
   };
 
-  const filteredMergeAccounts = accountList.filter((a) => {
+  const filteredMergeAccounts = accounts.filter((a) => {
     if (a.id === selectedAccount?.id) return false;
     if (a.status === "Pending Approval") return false;
     if (!mergeSearch) return true;
@@ -533,7 +239,7 @@ export default function AccountsPage() {
         <div className="flex items-center gap-2">
           <div className="relative max-w-sm flex-1">
             <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-            <Input placeholder="Search accounts..." className="pl-9" />
+            <Input placeholder="Search accounts..." className="pl-9" value={accountSearch} onChange={(e) => setAccountSearch(e.target.value)} />
           </div>
         </div>
 

@@ -4,6 +4,7 @@ import "./globals.css";
 
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
+import { CrmDataProvider } from "@/components/crm-data-provider";
 import { CaiProvider } from "@/components/cai-provider";
 
 const geistSans = Geist({
@@ -34,7 +35,9 @@ export default function RootLayout({
         <SidebarProvider>
           <AppSidebar />
           <SidebarInset>
-            <CaiProvider>{children}</CaiProvider>
+            <CrmDataProvider>
+              <CaiProvider>{children}</CaiProvider>
+            </CrmDataProvider>
           </SidebarInset>
         </SidebarProvider>
       </body>

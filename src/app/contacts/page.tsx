@@ -60,323 +60,12 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-type ContactStatus = "Active" | "Inactive" | "Pending Approval";
-
-type OpportunityStage =
-  | "Prospecting"
-  | "Qualification"
-  | "Needs Analysis"
-  | "Value Proposition"
-  | "Id. Decision Makers"
-  | "Perception Analysis"
-  | "Proposal/Price Quote"
-  | "Negotiation/Review"
-  | "Closed Won"
-  | "Closed Lost";
-
-interface Opportunity {
-  name: string;
-  amount: string;
-  stage: OpportunityStage;
-  closeDate: string;
-}
-
-interface Contact {
-  id: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  accountId: string;
-  accountName: string;
-  status: ContactStatus;
-  amount: string;
-  lastActivityDate: string;
-  initials: string;
-  phone: string;
-  mailingAddress: string;
-  website: string;
-  industry: string;
-  opportunities: Opportunity[];
-  description: string[];
-  createdDate: string;
-}
-
-const initialContacts: Contact[] = [
-  {
-    id: "con_ad",
-    firstName: "Ayşe",
-    lastName: "Demir",
-    email: "ayse.demir@turktraktor.com.tr",
-    accountId: "acc_tt",
-    accountName: "Türk Traktör",
-    status: "Pending Approval",
-    amount: "$185,000",
-    lastActivityDate: "2 hours ago",
-    initials: "AD",
-    phone: "",
-    mailingAddress: "",
-    website: "turktraktor.com.tr",
-    industry: "Heavy Machinery",
-    opportunities: [],
-    description: ["Auto-created by cai from email analysis"],
-    createdDate: "Feb 6, 2024",
-  },
-  {
-    id: "con_my",
-    firstName: "Mehmet",
-    lastName: "Yılmaz",
-    email: "mehmet@caterpillar.com.tr",
-    accountId: "acc_cat",
-    accountName: "Caterpillar Turkey",
-    status: "Pending Approval",
-    amount: "$92,000",
-    lastActivityDate: "5 hours ago",
-    initials: "MY",
-    phone: "",
-    mailingAddress: "",
-    website: "caterpillar.com.tr",
-    industry: "Construction Equipment",
-    opportunities: [],
-    description: ["Auto-created by cai from email analysis"],
-    createdDate: "Feb 6, 2024",
-  },
-  {
-    id: "con_cm",
-    firstName: "Carlos",
-    lastName: "Mendez",
-    email: "carlos@jcb-latam.com",
-    accountId: "acc_jcb",
-    accountName: "JCB Latin America",
-    status: "Pending Approval",
-    amount: "$340,000",
-    lastActivityDate: "4 days ago",
-    initials: "CM",
-    phone: "",
-    mailingAddress: "",
-    website: "jcb-latam.com",
-    industry: "Construction Equipment",
-    opportunities: [],
-    description: ["Auto-created by cai from email analysis"],
-    createdDate: "Feb 6, 2024",
-  },
-  {
-    id: "con_sj",
-    firstName: "Sarah",
-    lastName: "Johnson",
-    email: "sarah@acme.com",
-    accountId: "acc_acme",
-    accountName: "Acme Corp",
-    status: "Active",
-    amount: "$12,500",
-    lastActivityDate: "2 hours ago",
-    initials: "SJ",
-    phone: "+1 (555) 123-4567",
-    mailingAddress: "San Francisco, CA",
-    website: "acme.com",
-    industry: "Technology",
-    opportunities: [
-      { name: "Acme Corp - Enterprise Plan", amount: "$10,000", stage: "Negotiation/Review", closeDate: "2024-06-30" },
-      { name: "Acme Corp - Support Add-on", amount: "$2,500", stage: "Closed Won", closeDate: "2024-03-15" },
-    ],
-    description: [
-      "Key decision maker for Q2 expansion",
-      "Prefers email communication",
-    ],
-    createdDate: "Jan 15, 2024",
-  },
-  {
-    id: "con_mc",
-    firstName: "Michael",
-    lastName: "Chen",
-    email: "m.chen@techstart.io",
-    accountId: "acc_ts",
-    accountName: "TechStart",
-    status: "Active",
-    amount: "$8,200",
-    lastActivityDate: "1 day ago",
-    initials: "MC",
-    phone: "+1 (555) 234-5678",
-    mailingAddress: "Austin, TX",
-    website: "techstart.io",
-    industry: "SaaS",
-    opportunities: [
-      { name: "TechStart - Starter Plan", amount: "$8,200", stage: "Closed Won", closeDate: "2024-04-01" },
-    ],
-    description: ["Interested in API integrations"],
-    createdDate: "Mar 3, 2024",
-  },
-  {
-    id: "con_er",
-    firstName: "Emily",
-    lastName: "Rodriguez",
-    email: "emily@globalfin.com",
-    accountId: "acc_gf",
-    accountName: "GlobalFin",
-    status: "Active",
-    amount: "$24,000",
-    lastActivityDate: "3 days ago",
-    initials: "ER",
-    phone: "+1 (555) 345-6789",
-    mailingAddress: "New York, NY",
-    website: "globalfin.com",
-    industry: "Finance",
-    opportunities: [
-      { name: "GlobalFin - Premium Suite", amount: "$24,000", stage: "Proposal/Price Quote", closeDate: "2024-07-15" },
-    ],
-    description: ["Needs compliance features", "Budget approval pending"],
-    createdDate: "Feb 20, 2024",
-  },
-  {
-    id: "con_jw",
-    firstName: "James",
-    lastName: "Wilson",
-    email: "jwilson@innovate.co",
-    accountId: "acc_il",
-    accountName: "Innovate Labs",
-    status: "Active",
-    amount: "$15,750",
-    lastActivityDate: "5 hours ago",
-    initials: "JW",
-    phone: "+1 (555) 456-7890",
-    mailingAddress: "Seattle, WA",
-    website: "innovate.co",
-    industry: "R&D",
-    opportunities: [
-      { name: "Innovate Labs - Team Plan", amount: "$12,000", stage: "Closed Won", closeDate: "2024-02-28" },
-      { name: "Innovate Labs - Analytics Add-on", amount: "$3,750", stage: "Needs Analysis", closeDate: "2024-08-01" },
-    ],
-    description: ["Champion for internal adoption"],
-    createdDate: "Dec 8, 2023",
-  },
-  {
-    id: "con_lt",
-    firstName: "Lisa",
-    lastName: "Thompson",
-    email: "lisa@buildright.com",
-    accountId: "acc_br",
-    accountName: "BuildRight",
-    status: "Inactive",
-    amount: "$4,300",
-    lastActivityDate: "2 weeks ago",
-    initials: "LT",
-    phone: "+1 (555) 567-8901",
-    mailingAddress: "Chicago, IL",
-    website: "buildright.com",
-    industry: "Construction",
-    opportunities: [
-      { name: "BuildRight - Basic Plan", amount: "$4,300", stage: "Closed Lost", closeDate: "2024-01-15" },
-    ],
-    description: ["Lost due to budget cuts", "May return Q3"],
-    createdDate: "Nov 12, 2023",
-  },
-  {
-    id: "con_dk",
-    firstName: "David",
-    lastName: "Kim",
-    email: "dkim@nextera.io",
-    accountId: "acc_ne",
-    accountName: "NextEra",
-    status: "Active",
-    amount: "$31,000",
-    lastActivityDate: "1 hour ago",
-    initials: "DK",
-    phone: "+1 (555) 678-9012",
-    mailingAddress: "Los Angeles, CA",
-    website: "nextera.io",
-    industry: "Energy",
-    opportunities: [
-      { name: "NextEra - Enterprise Plan", amount: "$25,000", stage: "Closed Won", closeDate: "2024-01-10" },
-      { name: "NextEra - Custom Integration", amount: "$6,000", stage: "Negotiation/Review", closeDate: "2024-09-01" },
-    ],
-    description: ["VIP account", "Quarterly business reviews scheduled"],
-    createdDate: "Oct 5, 2023",
-  },
-  {
-    id: "con_ak",
-    firstName: "Anna",
-    lastName: "Kowalski",
-    email: "anna@eurodesign.eu",
-    accountId: "acc_ed",
-    accountName: "EuroDesign",
-    status: "Active",
-    amount: "$9,800",
-    lastActivityDate: "4 days ago",
-    initials: "AK",
-    phone: "+48 22 123 4567",
-    mailingAddress: "Warsaw, Poland",
-    website: "eurodesign.eu",
-    industry: "Design",
-    opportunities: [
-      { name: "EuroDesign - Pro Plan", amount: "$9,800", stage: "Proposal/Price Quote", closeDate: "2024-08-15" },
-    ],
-    description: ["EU data residency required"],
-    createdDate: "Apr 18, 2024",
-  },
-  {
-    id: "con_rg",
-    firstName: "Robert",
-    lastName: "Garcia",
-    email: "rgarcia@solarwind.com",
-    accountId: "acc_sw",
-    accountName: "SolarWind",
-    status: "Active",
-    amount: "$18,400",
-    lastActivityDate: "6 hours ago",
-    initials: "RG",
-    phone: "+1 (555) 789-0123",
-    mailingAddress: "Denver, CO",
-    website: "solarwind.com",
-    industry: "Renewable Energy",
-    opportunities: [
-      { name: "SolarWind - Growth Plan", amount: "$15,000", stage: "Closed Won", closeDate: "2024-03-01" },
-      { name: "SolarWind - Training Package", amount: "$3,400", stage: "Qualification", closeDate: "2024-10-01" },
-    ],
-    description: ["Expanding to 3 new offices"],
-    createdDate: "Sep 22, 2023",
-  },
-  {
-    id: "con_pp",
-    firstName: "Priya",
-    lastName: "Patel",
-    email: "priya@cloudnine.dev",
-    accountId: "acc_cn",
-    accountName: "CloudNine",
-    status: "Active",
-    amount: "$22,100",
-    lastActivityDate: "Yesterday",
-    initials: "PP",
-    phone: "+1 (555) 890-1234",
-    mailingAddress: "Boston, MA",
-    website: "cloudnine.dev",
-    industry: "Cloud Services",
-    opportunities: [
-      { name: "CloudNine - Scale Plan", amount: "$22,100", stage: "Closed Won", closeDate: "2024-04-15" },
-    ],
-    description: ["Referred by David Kim", "Wants annual billing discount"],
-    createdDate: "Jan 30, 2024",
-  },
-  {
-    id: "con_ta",
-    firstName: "Tom",
-    lastName: "Anderson",
-    email: "tom@steelbridge.co",
-    accountId: "acc_sb",
-    accountName: "SteelBridge",
-    status: "Inactive",
-    amount: "$6,700",
-    lastActivityDate: "1 month ago",
-    initials: "TA",
-    phone: "+1 (555) 901-2345",
-    mailingAddress: "Detroit, MI",
-    website: "steelbridge.co",
-    industry: "Manufacturing",
-    opportunities: [
-      { name: "SteelBridge - Basic Plan", amount: "$6,700", stage: "Closed Lost", closeDate: "2023-12-01" },
-    ],
-    description: ["Contract expired", "Follow up in 6 months"],
-    createdDate: "Aug 14, 2023",
-  },
-];
+import {
+  useCrmData,
+  type Contact,
+  type ContactStatus,
+  type ContactOpportunity as Opportunity,
+} from "@/components/crm-data-provider";
 
 const statusVariant: Record<
   ContactStatus,
@@ -422,7 +111,15 @@ function getConflictType(existing: string, incoming: string): "same" | "one-empt
 }
 
 export default function ContactsPage() {
-  const [contactList, setContactList] = useState<Contact[]>(initialContacts);
+  const {
+    contacts,
+    filteredContacts: contactList,
+    contactSearch,
+    setContactSearch,
+    approveContact,
+    rejectContact,
+    mergeContact,
+  } = useCrmData();
   const [selectedContact, setSelectedContact] = useState<Contact | null>(null);
   const [editForm, setEditForm] = useState<Partial<Contact>>({});
   const [sheetView, setSheetView] = useState<SheetView>("approval");
@@ -469,25 +166,13 @@ export default function ContactsPage() {
 
   const handleMerge = () => {
     if (!selectedContact || !mergeTarget) return;
-    setContactList((prev) =>
-      prev
-        .map((c) =>
-          c.id === mergeTarget.id
-            ? {
-                ...c,
-                ...mergeForm,
-                initials: `${mergeForm.firstName[0]}${mergeForm.lastName[0]}`.toUpperCase(),
-              }
-            : c
-        )
-        .filter((c) => c.id !== selectedContact.id)
-    );
+    mergeContact(selectedContact.id, mergeTarget.id, mergeForm);
     setSelectedContact(null);
     setSheetView("approval");
     setMergeTarget(null);
   };
 
-  const filteredMergeContacts = contactList.filter((c) => {
+  const filteredMergeContacts = contacts.filter((c) => {
     if (c.id === selectedContact?.id) return false;
     if (c.status === "Pending Approval") return false;
     if (!mergeSearch) return true;
@@ -501,26 +186,13 @@ export default function ContactsPage() {
 
   const handleApprove = () => {
     if (!selectedContact) return;
-    setContactList((prev) =>
-      prev.map((c) =>
-        c.id === selectedContact.id
-          ? {
-              ...c,
-              ...editForm,
-              status: "Active" as ContactStatus,
-              initials: `${(editForm.firstName || c.firstName)[0]}${(editForm.lastName || c.lastName)[0]}`.toUpperCase(),
-            }
-          : c
-      )
-    );
+    approveContact(selectedContact.id, editForm);
     setSelectedContact(null);
   };
 
   const handleReject = () => {
     if (!selectedContact) return;
-    setContactList((prev) =>
-      prev.filter((c) => c.id !== selectedContact.id)
-    );
+    rejectContact(selectedContact.id);
     setSelectedContact(null);
   };
 
@@ -577,7 +249,7 @@ export default function ContactsPage() {
         <div className="flex items-center gap-2">
           <div className="relative max-w-sm flex-1">
             <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-            <Input placeholder="Search contacts..." className="pl-9" />
+            <Input placeholder="Search contacts..." className="pl-9" value={contactSearch} onChange={(e) => setContactSearch(e.target.value)} />
           </div>
         </div>
 

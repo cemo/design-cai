@@ -12,7 +12,6 @@ import {
   LogOut,
   Mail,
   Settings,
-  Target,
   Users,
 } from "lucide-react";
 
@@ -40,11 +39,9 @@ import {
 
 const navMain = [
   { title: "Home", icon: LayoutDashboard, href: "/" },
-  { title: "Leads", icon: Target, href: "/leads" },
   { title: "Accounts", icon: Briefcase, href: "/accounts" },
   { title: "Contacts", icon: BookUser, href: "/contacts" },
   { title: "Opportunities", icon: CircleDot, href: "/opportunities" },
-  { title: "Cases", icon: Users, href: "/cases" },
   { title: "Emails", icon: Mail, href: "/emails" },
   { title: "Reports", icon: BarChart3, href: "/reports" },
 ];

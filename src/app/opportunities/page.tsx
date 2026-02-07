@@ -51,263 +51,14 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-type OpportunityStatus = "Active" | "Inactive" | "Pending Approval";
-
-type OpportunityStage =
-  | "Prospecting"
-  | "Qualification"
-  | "Needs Analysis"
-  | "Value Proposition"
-  | "Id. Decision Makers"
-  | "Perception Analysis"
-  | "Proposal/Price Quote"
-  | "Negotiation/Review"
-  | "Closed Won"
-  | "Closed Lost";
-
-interface Opportunity {
-  id: string;
-  name: string;
-  amount: string;
-  stage: OpportunityStage;
-  closeDate: string;
-  probability: string;
-  accountId: string;
-  accountName: string;
-  contactId: string;
-  contactName: string;
-  status: OpportunityStatus;
-  lastActivityDate: string;
-  initials: string;
-  description: string[];
-  createdDate: string;
-}
+import {
+  useCrmData,
+  type Opportunity,
+  type OpportunityStatus,
+  type OpportunityStage,
+} from "@/components/crm-data-provider";
 
 type SheetView = "detail" | "approval";
-
-const initialOpportunities: Opportunity[] = [
-  {
-    id: "opp_1",
-    name: "Türk Traktör - Fleet Management System",
-    amount: "$185,000",
-    stage: "Prospecting",
-    closeDate: "2024-08-15",
-    probability: "20%",
-    accountId: "acc_tt",
-    accountName: "Türk Traktör",
-    contactId: "con_ad",
-    contactName: "Ayşe Demir",
-    status: "Pending Approval",
-    lastActivityDate: "2 hours ago",
-    initials: "TT",
-    description: ["Auto-created by cai from email analysis"],
-    createdDate: "Feb 6, 2024",
-  },
-  {
-    id: "opp_2",
-    name: "Caterpillar TR - Parts Portal",
-    amount: "$92,000",
-    stage: "Qualification",
-    closeDate: "2024-09-01",
-    probability: "30%",
-    accountId: "acc_cat",
-    accountName: "Caterpillar Turkey",
-    contactId: "con_my",
-    contactName: "Mehmet Yılmaz",
-    status: "Pending Approval",
-    lastActivityDate: "5 hours ago",
-    initials: "CT",
-    description: ["Auto-created by cai from email analysis"],
-    createdDate: "Feb 6, 2024",
-  },
-  {
-    id: "opp_3",
-    name: "JCB LATAM - Dealer Network Platform",
-    amount: "$340,000",
-    stage: "Needs Analysis",
-    closeDate: "2024-10-15",
-    probability: "40%",
-    accountId: "acc_jcb",
-    accountName: "JCB Latin America",
-    contactId: "con_cm",
-    contactName: "Carlos Mendez",
-    status: "Pending Approval",
-    lastActivityDate: "4 days ago",
-    initials: "JL",
-    description: ["Auto-created by cai from email analysis"],
-    createdDate: "Feb 6, 2024",
-  },
-  {
-    id: "opp_4",
-    name: "Acme Corp - Enterprise Plan",
-    amount: "$10,000",
-    stage: "Negotiation/Review",
-    closeDate: "2024-06-30",
-    probability: "80%",
-    accountId: "acc_acme",
-    accountName: "Acme Corp",
-    contactId: "con_sj",
-    contactName: "Sarah Johnson",
-    status: "Active",
-    lastActivityDate: "2 hours ago",
-    initials: "AC",
-    description: ["Key enterprise account", "Expanding to EU markets"],
-    createdDate: "Jan 15, 2024",
-  },
-  {
-    id: "opp_5",
-    name: "Acme Corp - Support Add-on",
-    amount: "$2,500",
-    stage: "Closed Won",
-    closeDate: "2024-03-15",
-    probability: "100%",
-    accountId: "acc_acme",
-    accountName: "Acme Corp",
-    contactId: "con_sj",
-    contactName: "Sarah Johnson",
-    status: "Active",
-    lastActivityDate: "1 week ago",
-    initials: "AC",
-    description: ["Support tier upgrade"],
-    createdDate: "Feb 1, 2024",
-  },
-  {
-    id: "opp_6",
-    name: "TechStart - Starter Plan",
-    amount: "$5,200",
-    stage: "Qualification",
-    closeDate: "2024-07-15",
-    probability: "30%",
-    accountId: "acc_ts",
-    accountName: "TechStart",
-    contactId: "con_mc",
-    contactName: "Michael Chen",
-    status: "Active",
-    lastActivityDate: "1 day ago",
-    initials: "TS",
-    description: ["Interested in API integrations"],
-    createdDate: "Mar 3, 2024",
-  },
-  {
-    id: "opp_7",
-    name: "GlobalFin - Compliance Module",
-    amount: "$18,000",
-    stage: "Proposal/Price Quote",
-    closeDate: "2024-08-01",
-    probability: "60%",
-    accountId: "acc_gf",
-    accountName: "GlobalFin",
-    contactId: "con_er",
-    contactName: "Emily Rodriguez",
-    status: "Active",
-    lastActivityDate: "3 days ago",
-    initials: "GF",
-    description: ["Needs compliance features", "Budget approval pending"],
-    createdDate: "Feb 20, 2024",
-  },
-  {
-    id: "opp_8",
-    name: "Innovate Labs - Pro Plan",
-    amount: "$12,000",
-    stage: "Negotiation/Review",
-    closeDate: "2024-05-20",
-    probability: "75%",
-    accountId: "acc_il",
-    accountName: "Innovate Labs",
-    contactId: "con_jw",
-    contactName: "James Wilson",
-    status: "Active",
-    lastActivityDate: "5 hours ago",
-    initials: "IL",
-    description: ["Champion for internal adoption"],
-    createdDate: "Dec 8, 2023",
-  },
-  {
-    id: "opp_9",
-    name: "BuildRight - Basic Plan",
-    amount: "$4,300",
-    stage: "Closed Lost",
-    closeDate: "2024-03-01",
-    probability: "0%",
-    accountId: "acc_br",
-    accountName: "BuildRight",
-    contactId: "con_lt",
-    contactName: "Lisa Thompson",
-    status: "Inactive",
-    lastActivityDate: "2 weeks ago",
-    initials: "BR",
-    description: ["Lost due to budget cuts", "May return Q3"],
-    createdDate: "Nov 12, 2023",
-  },
-  {
-    id: "opp_10",
-    name: "NextEra - Enterprise Suite",
-    amount: "$25,000",
-    stage: "Closed Won",
-    closeDate: "2024-01-30",
-    probability: "100%",
-    accountId: "acc_ne",
-    accountName: "NextEra",
-    contactId: "con_dk",
-    contactName: "David Kim",
-    status: "Active",
-    lastActivityDate: "1 hour ago",
-    initials: "NE",
-    description: ["VIP account", "Quarterly business reviews scheduled"],
-    createdDate: "Oct 5, 2023",
-  },
-  {
-    id: "opp_11",
-    name: "SolarWind - Growth Plan",
-    amount: "$14,000",
-    stage: "Closed Won",
-    closeDate: "2023-11-15",
-    probability: "100%",
-    accountId: "acc_sw",
-    accountName: "SolarWind",
-    contactId: "con_rg",
-    contactName: "Robert Garcia",
-    status: "Active",
-    lastActivityDate: "6 hours ago",
-    initials: "SW",
-    description: ["Expanding to 3 new offices"],
-    createdDate: "Sep 22, 2023",
-  },
-  {
-    id: "opp_12",
-    name: "CloudNine - Annual License",
-    amount: "$18,000",
-    stage: "Closed Won",
-    closeDate: "2024-02-15",
-    probability: "100%",
-    accountId: "acc_cn",
-    accountName: "CloudNine",
-    contactId: "con_pp",
-    contactName: "Priya Patel",
-    status: "Active",
-    lastActivityDate: "Yesterday",
-    initials: "CN",
-    description: ["Referred by David Kim", "Wants annual billing discount"],
-    createdDate: "Jan 30, 2024",
-  },
-  {
-    id: "opp_13",
-    name: "SteelBridge - Enterprise Plan",
-    amount: "$6,700",
-    stage: "Closed Lost",
-    closeDate: "2023-12-01",
-    probability: "0%",
-    accountId: "acc_sb",
-    accountName: "SteelBridge",
-    contactId: "con_ta",
-    contactName: "Tom Anderson",
-    status: "Inactive",
-    lastActivityDate: "1 month ago",
-    initials: "SB",
-    description: ["Contract expired", "Follow up in 6 months"],
-    createdDate: "Aug 14, 2023",
-  },
-];
 
 const statusVariant: Record<
   OpportunityStatus,
@@ -326,7 +77,13 @@ const stats = [
 ];
 
 export default function OpportunitiesPage() {
-  const [opportunityList, setOpportunityList] = useState<Opportunity[]>(initialOpportunities);
+  const {
+    filteredOpportunities: opportunityList,
+    opportunitySearch,
+    setOpportunitySearch,
+    approveOpportunity,
+    rejectOpportunity,
+  } = useCrmData();
   const [selectedOpportunity, setSelectedOpportunity] = useState<Opportunity | null>(null);
   const [editForm, setEditForm] = useState<Partial<Opportunity>>({});
   const [sheetView, setSheetView] = useState<SheetView>("detail");
@@ -347,26 +104,13 @@ export default function OpportunitiesPage() {
 
   const handleApprove = () => {
     if (!selectedOpportunity) return;
-    setOpportunityList((prev) =>
-      prev.map((o) =>
-        o.id === selectedOpportunity.id
-          ? {
-              ...o,
-              ...editForm,
-              status: "Active" as OpportunityStatus,
-              initials: (editForm.name || o.name).split(" ").map((w) => w[0]).join("").toUpperCase().slice(0, 2),
-            }
-          : o
-      )
-    );
+    approveOpportunity(selectedOpportunity.id, editForm);
     setSelectedOpportunity(null);
   };
 
   const handleReject = () => {
     if (!selectedOpportunity) return;
-    setOpportunityList((prev) =>
-      prev.filter((o) => o.id !== selectedOpportunity.id)
-    );
+    rejectOpportunity(selectedOpportunity.id);
     setSelectedOpportunity(null);
   };
 
@@ -423,7 +167,7 @@ export default function OpportunitiesPage() {
         <div className="flex items-center gap-2">
           <div className="relative max-w-sm flex-1">
             <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-            <Input placeholder="Search opportunities..." className="pl-9" />
+            <Input placeholder="Search opportunities..." className="pl-9" value={opportunitySearch} onChange={(e) => setOpportunitySearch(e.target.value)} />
           </div>
         </div>
 
